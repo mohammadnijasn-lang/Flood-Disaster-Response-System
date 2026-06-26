@@ -1,0 +1,28 @@
+# Dataset
+mmflood/
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Secrets
+.env
+*.env
+
+# Cache folders
+cache/
+agents/cache/
+
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Kerala Disaster Control Dashboard</title>
+
+<meta charset="UTF-8">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:
+linear-gradient(
+135deg,
+#081120,
+#0d1b35,
+#13294f
+);
+color:white;
+padding:25px;
+min-height:100vh;
+}
+
+h1{
+text-align:center;
+margin-bottom:25px;
+color:#00e5ff;
+}
+
+.dashboard{
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+
+}
+
+.card{
+
+background:
+rgba(17,28,53,.75);
+
+backdrop-filter:
+blur(12px);
+
+border:
+1px solid rgba(0,229,255,.2);
+
+border-radius:20px;
+
+padding:20px;
+
+box-shadow:
+0 8px 30px rgba(0,229,255,.12);
+
+}
+.card h2{
+margin-bottom:15px;
+color:#00e5ff;
+}
+
+.stats{
+
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:25px;
+
+}
+
+.stat{
+
+padding:20px;
+border-radius:15px;
+text-align:center;
+font-weight:bold;
+
+}
+
+.green{
+background:#1b5e20;
+}
+
+.yellow{
+background:#f9a825;
+color:black;
+}
+
+.orange{
+background:#ef6c00;
+}
+
+.red{
+background:#b71c1c;
+}
+
+.stat h3{
+font-size:28px;
+}
+
+input{
+
+width:100%;
+padding:10px;
+margin-top:5px;
+margin-bottom:10px;
+border:none;
+border-radius:8px;
+
+}
+
+button{
+
+background:#00d4ff;
+border:none;
+padding:12px 18px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+margin-top:10px;
+
+}
+
+button:hover{
+
+background:#00aacc;
+
+}
+
+table{
+
+width:100%;
+border-collapse:collapse;
+
+}
+
+th,td{
+
+padding:12px;
+border-bottom:1px solid #24395f;
+text-align:left;
+
+}
+
+th{
+
+color:#00e5ff;
+
+}
+
+.incident{
+
+background:#0c1528;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+
+}
+
+.actions{
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+
+}
+
+.actions a button{
+width:100%;
+}
+
+#sos{
+color:#ff5a5a;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🚨 Kerala Disaster Response Control Center</h1>
+
+<div class="stats">
+
+<div class="stat green">
+<h3 id="greenCount">0</h3>
+<p>GREEN</p>
+</div>
+
+<div class="stat yellow">
+<h3 id="yellowCount">0</h3>
+<p>YELLOW</p>
+</div>
+
+<div class="stat orange">
+<h3 id="orangeCount">0</h3>
+<p>ORANGE</p>
+</div>
+
+<div class="stat red">
+<h3 id="redCount">0</h3>
+<p>RED</p>
+</div>
+
+</div>
+
+<div class="dashboard">
+
+<div>
+
+<div class="card">
+
+<h2>📡 Upload Drone Image</h2>
+
+<form
+action="/upload_drone"
+method="post"
+enctype="multipart/form-data"
+>
+
+<input
+type="file"
+name="image"
+required
+>
+
+<button type="submit">
+Upload Drone Image
+</button>
+
+</form>
+
+</div>
+
+<div class="card">
+
+<h2>🚑 Resource Management</h2>
+
+<form
+action="/resources"
+method="post"
+>
+
+<label>Ambulances</label>
+<input name="ambulances" value="50">
+
+<label>Boats</label>
+<input name="boats" value="20">
+
+<label>rescue Workers</label>
+<input name="rescue_Workers" value="100">
+
+<label>Food Packets</label>
+<input name="food_packets" value="5000">
+
+<label>Water Packets</label>
+<input name="water_packets" value="10000">
+
+<button type="submit">
+Update Resources
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<div>
+
+<div class="card">
+
+<h2 id="sos">
+
+🚨 Active SOS Requests: 0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<h2>📍 Active Incidents</h2>
+
+<div id="incidents">
+
+Loading...
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>🔥 Priority Districts</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>District</th>
+
+<th>Rainfall</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="priorityTable">
+<tr>
+<td colspan="3">Loading...</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+<div class="dashboard">
+
+<div class="card">
+
+<h2>👤 Admin Profile</h2>
+
+<div id="profile">
+
+Loading...
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>🚑 Live Resources</h2>
+
+<div id="resources">
+
+Loading...
+
+</div>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>🚤 Dispatch History</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>District</th>
+<th>Resource</th>
+<th>Count</th>
+</tr>
+</thead>
+
+<tbody id="dispatchTable">
+
+<tr>
+<td colspan="3">
+Loading...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>📜 Audit Log</h2>
+
+<div id="auditLog">
+
+Loading...
+
+</div>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>District</th>
+<th>Rainfall</th>
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody id="priorityTable">
+
+<tr>
+
+<td colspan="3">
+
+Loading...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h2>🛠 Admin Actions</h2>
+
+<div class="actions">
+
+<a href="/incident_map" target="_blank">
+<button>🗺 Live Incident Map</button>
+</a>
+
+<a href="/rescue_route" target="_blank">
+
+<button>
+
+🚑 Rescue Route
+
+</button>
+
+</a>
+
+<a href="/forecast" target="_blank">
+<button>🌧 District Forecast</button>
+</a>
+
+<a href="/control_room" target="_blank">
+<button>🚨 Control Room</button>
+</a>
+
+<a href="/analyze_drone" target="_blank">
+<button>📡 Analyze Drone</button>
+</a>
+
+<a href="/logout" style="text-decoration:none">
+
+<button
+style="
+background:#ff4d4d;
+color:white;
+width:100%;
+">
+
+🚪 Logout
+
+</button>
+
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+function loadAdminStats(){
+
+fetch("/admin_stats")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+document.getElementById("sos").innerHTML =
+"🚨 Active SOS Requests: "
++
+data.active_sos
+
+let html=""
+
+data.incidents.forEach(i=>{
+
+html += `
+
+<div class="incident">
+
+<b>${i.name}</b>
+
+<br>
+
+📍 ${i.lat}, ${i.lon}
+
+<br>
+
+🕒 ${i.time}
+
+</div>
+
+`
+
+})
+
+document.getElementById(
+"incidents"
+).innerHTML = html
+
+})
+
+}
+
+function loadPriority(){
+
+fetch("/forecast")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+let table=""
+
+let green=0
+let yellow=0
+let orange=0
+let red=0
+
+data.forEach(d=>{
+
+let status=d.severity
+
+if(status=="LOW"){
+green++
+}
+
+else if(status=="MEDIUM"){
+yellow++
+}
+
+else if(status=="HIGH"){
+orange++
+}
+
+else{
+red++
+}
+
+table += `
+
+<tr>
+
+<td>${d.district}</td>
+
+<td>${d.rainfall}</td>
+
+<td>${status}</td>
+
+<td>
+
+${
+(status!="LOW")
+
+?
+
+`<button onclick="sendAlert('${d.district}')">
+
+📲 Send Alert
+
+</button>`
+
+:
+
+"—"
+
+}
+
+</td>
+
+</tr>
+
+`
+
+})
+
+document.getElementById(
+"priorityTable"
+).innerHTML = table
+
+document.getElementById(
+"greenCount"
+).innerHTML = green
+
+document.getElementById(
+"yellowCount"
+).innerHTML = yellow
+
+document.getElementById(
+"orangeCount"
+).innerHTML = orange
+
+document.getElementById(
+"redCount"
+).innerHTML = red
+
+})
+
+}
+
+function sendAlert(district){
+
+fetch("/send_alert/"+district)
+
+.then(r=>r.json())
+
+.then(data=>{
+
+alert(
+
+"SMS sent to citizens of "
+
++
+
+district
+
+);
+
+});
+
+}
+
+loadAdminStats()
+loadPriority()
+
+setInterval(loadAdminStats,5000)
+setInterval(loadPriority,15000)
+
+function loadProfile(){
+
+fetch("/admin_profile")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+document.getElementById(
+"profile"
+).innerHTML =
+
+`
+<b>User:</b> ${data.user}
+<br><br>
+<b>Role:</b> ${data.role}
+`
+
+})
+
+}
+
+function loadResources(){
+
+fetch("/live_resources")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+document.getElementById(
+"resources"
+).innerHTML =
+
+`
+🚤 Boats: ${data.boats}
+<br><br>
+🚑 Ambulances: ${data.ambulances}
+<br><br>
+👷 rescue_Workers: ${data.rescue_workers}
+<br><br>
+🍱 Food_packets: ${data.food_packets}
+<br><br>
+💧 Water_packets: ${data.water_packets}
+`
+
+})
+
+}
+
+function loadDispatchHistory(){
+
+fetch("/dispatch_history")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+let html=""
+
+data.forEach(d=>{
+
+html += `
+
+<tr>
+
+<td>${d.district}</td>
+
+<td>${d.resource}</td>
+
+<td>${d.count}</td>
+
+</tr>
+
+`
+
+})
+
+document.getElementById(
+"dispatchTable"
+).innerHTML = html
+
+})
+
+}
+
+function loadAuditLog(){
+
+fetch("/audit_log")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+let html=""
+
+data.forEach(log=>{
+
+html += `
+
+<div class="incident">
+
+${log.event}
+
+</div>
+
+`
+
+})
+
+document.getElementById(
+"auditLog"
+).innerHTML = html
+
+})
+
+}
+
+loadProfile()
+loadResources()
+loadDispatchHistory()
+loadAuditLog()
+
+setInterval(loadResources,5000)
+
+</script>
+
+</body>
+
+</html>
