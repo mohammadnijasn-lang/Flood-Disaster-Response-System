@@ -1,5 +1,5 @@
 from fileinput import filename
-import hashlib
+import os
 from pyexpat import features
 
 import requests
@@ -15,11 +15,12 @@ from agents.location_agent import (
     get_coordinates,
     create_bbox
 )
+from dotenv import load_dotenv
 
-import hashlib
+load_dotenv()
 
-CLIENT_ID = "sh-5ba22570-31e3-4d9e-8840-4796b8bb43a2"
-CLIENT_SECRET = "FOGDX7B5bJQhmSwsFn6K0uY7tU1BtTC3"
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
 # =====================
 # TOKEN

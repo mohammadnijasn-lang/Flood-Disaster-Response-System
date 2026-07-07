@@ -6,9 +6,8 @@ resource_agent = Agent(
     role="Resource Allocation Agent",
 
     goal="""
-    Allocate ambulances, rescue workers,
-    food packets, water packets,
-    hospitals and shelters.
+    Analyze emergency priority, allocate rescue resources,
+    and recommend the required response level.
     """,
 
     backstory="""

@@ -1,53 +1,259 @@
-import json
-import os
-from datetime import datetime
+from agents.database import get_connection
 
-FILE = "active_incidents.json"
+
+# =====================================
+# CREATE SOS
+# =====================================
 
 def create_sos(
+
     name,
     lat,
-    lon
+    lon,
+    phone,
+    district
+
 ):
 
-    incident = {
+    conn = get_connection()
 
-        "name": name,
+    cursor = conn.cursor()
 
-        "lat": lat,
+    cursor.execute(
 
-        "lon": lon,
+        """
 
-        "time":
-        str(datetime.now())
-    }
+        INSERT INTO incidents(
 
-    data = []
+            name,
 
-    if os.path.exists(FILE):
+            phone,
 
-        with open(FILE,"r") as f:
+            district,
 
-            data = json.load(f)
+            latitude,
 
-    data.append(
-        incident
+            longitude,
+
+            status
+
+        )
+
+        VALUES(
+
+            %s,
+
+            %s,
+
+            %s,
+
+            %s,
+
+            %s,
+
+            %s
+
+        )
+
+        """,
+
+        (
+
+            name,
+            phone,
+            district,
+            lat,
+            lon,
+            "ACTIVE"
+
+        )
+
     )
 
-    with open(FILE,"w") as f:
+    conn.commit()
 
-        json.dump(
-            data,
-            f,
-            indent=4
-        )
+    cursor.close()
+
+    conn.close()
+
+
+# =====================================
+# GET ALL INCIDENTS
+# =====================================
 
 def get_active_incidents():
 
-    if not os.path.exists(FILE):
+    conn = get_connection()
 
-        return []
+    cursor = conn.cursor(dictionary=True)
 
-    with open(FILE,"r") as f:
+    cursor.execute(
 
-        return json.load(f)
+        """
+
+        SELECT
+
+            id,
+
+            name,
+
+            phone,
+
+            district,
+
+            latitude AS lat,
+
+            longitude AS lon,
+
+            status,
+
+            created_at AS time
+
+        FROM incidents
+
+        ORDER BY created_at DESC
+
+        """
+
+    )
+
+    incidents = cursor.fetchall()
+
+    cursor.close()
+
+    conn.close()
+
+    return incidents
+
+
+# =====================================
+# UPDATE STATUS
+# =====================================
+
+def update_incident_status(
+
+    phone,
+    status
+
+):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+
+        """
+
+        UPDATE incidents
+
+        SET status=%s
+
+        WHERE phone=%s
+
+        """,
+
+        (
+
+            status,
+            phone
+
+        )
+
+    )
+
+    conn.commit()
+
+    cursor.close()
+
+    conn.close()
+
+
+# =====================================
+# SOS COUNT
+# =====================================
+
+def get_sos_count(
+
+    district
+
+):
+
+    conn = get_connection()
+
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+
+        """
+
+        SELECT COUNT(*) AS total
+
+        FROM incidents
+
+        WHERE
+
+            district=%s
+
+            AND
+
+            status='ACTIVE'
+
+        """,
+
+        (
+
+            district,
+
+        )
+
+    )
+
+    total = cursor.fetchone()["total"]
+
+    cursor.close()
+
+    conn.close()
+
+    return total
+
+
+# =====================================
+# DELETE INCIDENT
+# =====================================
+
+def delete_incident(
+
+    id
+
+):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+
+        """
+
+        DELETE
+
+        FROM incidents
+
+        WHERE id=%s
+
+        """,
+
+        (
+
+            id,
+
+        )
+
+    )
+
+    conn.commit()
+
+    cursor.close()
+
+    conn.close()

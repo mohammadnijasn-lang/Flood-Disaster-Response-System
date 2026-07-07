@@ -1,42 +1,36 @@
-from agents.citizen_db import get_citizens
-from agents.sms_module import send_sms
+from agents.notification_module import send_alert
 
-def send_alert_to_district(
+
+def create_alert(
 
     district,
 
-    alert
+    vision_result
 
 ):
 
-    citizens = get_citizens()
+    severity = vision_result["severity"]
 
-    for citizen in citizens:
+    message = f"""
 
-        if citizen["district"] == district:
+Flood Severity : {severity}
 
-            message = f"""
+People At Risk : {vision_result['people_at_risk']}
 
-Kerala SDMA
+Road Blocked : {vision_result['road_blocked']}
 
-District :
+Recommendation :
 
-{district}
-
-Alert :
-
-{alert}
-
-Please stay safe.
-
-Emergency : 1077
+{vision_result['recommendation']}
 
 """
 
-            send_sms(
+    print("\nALERT CREATED")
 
-                citizen["phone"],
+    return send_alert(
 
-                message
+        district,
 
-            )
+        message
+
+    )

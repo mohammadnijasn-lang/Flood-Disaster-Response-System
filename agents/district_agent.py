@@ -41,6 +41,18 @@ def get_district(
 
         )
 
+        if district:
+
+            district = district.replace(
+                " District",
+                ""
+            )
+
+            district = district.replace(
+                " district",
+                ""
+            )
+
         return district
 
     except Exception as e:

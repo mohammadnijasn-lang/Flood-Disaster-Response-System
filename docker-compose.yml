@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+
+  flask:
+
+    build: .
+
+    container_name: disaster_app
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - .env
+
+    volumes:
+      - .:/app
+
+    # depends_on:
+    #   - mysql
+
+    restart: unless-stopped
+
+
+  # mysql:
+
+  #   image: mysql:8.4
+
+  #   container_name: disaster_mysql
+
+  #   restart: unless-stopped
+
+  #   environment:
+
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+
+  #     MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+  #   ports:
+  #     - "3306:3306"
+
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+
+
+# volumes:
+
+#   mysql_data:

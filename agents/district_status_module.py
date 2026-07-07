@@ -6,7 +6,7 @@ from agents.weather_agent import (
     get_weather_risk
 )
 
-from agents.sentinel_agent import (
+from agents.sentinel_fetch import (
     predict_location
 )
 

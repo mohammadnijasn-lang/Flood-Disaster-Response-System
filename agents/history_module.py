@@ -1,2 +1,0 @@
-DISPATCH_HISTORY = []
-AUDIT_LOG = []

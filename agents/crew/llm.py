@@ -1,6 +1,8 @@
 from crewai import LLM
+import os
 
 llm = LLM(
-    model="ollama/llama3",
-    base_url="http://localhost:11434"
+    model="gemini/gemini-2.5-flash",
+    api_key=os.getenv("GEMINI_API_KEY")
 )
+print("Gemini Key:", os.getenv("GEMINI_API_KEY"))

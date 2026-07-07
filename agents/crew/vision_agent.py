@@ -3,10 +3,14 @@ from .llm import llm
 
 vision_agent = Agent(
 
-    role="Satellite Vision Agent",
+    role="Drone Vision Agent",
 
     goal="""
-    Analyze flood extent from satellite imagery.
+    Analyze uploaded drone imagery,
+    detect trapped people,
+    blocked roads,
+    vehicles,
+    and rescue urgency.
     """,
 
     backstory="""

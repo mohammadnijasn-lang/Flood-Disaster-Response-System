@@ -1,44 +1,36 @@
 def predict_future_flood(
-
     flood_percent,
     rainfall
-
 ):
 
     probability = (
 
-        flood_percent * 5
+        flood_percent * 4
 
         +
 
-        rainfall * 2
+        rainfall * 3
 
     )
 
-    probability = min(
-        100,
-        probability
-    )
+    probability = min(100, probability)
 
     if probability < 30:
-
         severity = "LOW"
 
     elif probability < 60:
-
         severity = "MEDIUM"
 
     elif probability < 80:
-
         severity = "HIGH"
 
     else:
-
         severity = "CRITICAL"
 
     return {
 
-        "probability": probability,
+        "probability": round(probability, 2),
 
         "severity": severity
+
     }

@@ -1,72 +1,10 @@
-# from PIL import Image
-# import numpy as np
-
-
-# def analyze_flood_mask(
-#     mask_path
-# ):
-
-#     img = Image.open(
-#         mask_path
-#     )
-
-#     img = img.convert(
-#         "L"
-#     )
-
-#     arr = np.array(img)
-
-#     flood_pixels = np.sum(
-#         arr > 100
-#     )
-
-#     total_pixels = arr.size
-
-#     flood_percent = round(
-
-#         flood_pixels
-#         /
-#         total_pixels
-#         *
-#         100,
-
-#         2
-#     )
-
-#     if flood_percent < 2:
-
-#         severity = "LOW"
-
-#     elif flood_percent < 5:
-
-#         severity = "MODERATE"
-
-#     elif flood_percent < 10:
-
-#         severity = "HIGH"
-
-#     else:
-
-#         severity = "EXTREME"
-
-#     return {
-
-#         "flood_pixels":
-#         int(flood_pixels),
-
-#         "flood_percent":
-#         flood_percent,
-
-#         "severity":
-#         severity
-#     }
-
-
 from openai import OpenAI
 from dotenv import load_dotenv
 import base64
 import os
 import json
+from agents.drone_db import latest_drone
+from agents.Yolo_module import count_people
 
 def analyze_ground_image(image_path):
     load_dotenv()
@@ -87,16 +25,37 @@ def analyze_ground_image(image_path):
                     {
                         "type": "text",
                         "text": """
-    Analyze the image carefully.
+    You are an expert disaster image analyst.
 
-    Return ONLY valid JSON.
+    Your job is to determine ONLY what is visually observable.
+
+    Rules:
+
+    1. Never assume a flood exists.
+    2. Flooding exists ONLY if standing or flowing floodwater is clearly visible.
+    3. Wet roads, reflections, shadows, or dark pavement are NOT floods.
+    4. If you are uncertain, answer "flood_detected": false.
+    5. Never invent trapped people, damaged buildings, or blocked roads.
+    6. Count only objects that are actually visible.
+    7. Ignore weather conditions unless they are directly visible.
+    8. Base every answer ONLY on the uploaded image.
+    9. Do not use outside knowledge.
+    10. Return ONLY valid JSON.
+
+    Return exactly:
 
     {
     "flood_detected": true,
-    "severity": "Low | Medium | High | Critical",
-    "road_blocked": true,
-    "people_at_risk": true,
-    "rescue_recommendation": "string"
+    "confidence": 0.95,
+    "severity":"None|Low|Medium|High|Critical",
+    "road_blocked":false,
+    "people_at_risk":false,
+    "estimated_people":0,
+    "vehicles_visible":0,
+    "houses_damaged":0,
+    "collapsed_buildings":0,
+    "water_level":"None|Ankle|Knee|Waist|Roof",
+    "rescue_recommendation":"string"
     }
     """
                     },
@@ -135,31 +94,64 @@ def analyze_ground_image(image_path):
         print(result)
         print(e)
 
+    # --------------------------
+    # YOLO Detection
+    # --------------------------
+
+    yolo = count_people(image_path)
+
     return {
 
-        # "flood_detected": data["flood_detected"],
+        "flood_detected": data["flood_detected"],
 
-        # "severity": data["severity"],
+        "severity": data["severity"],
 
-        # "road_blocked": data["road_blocked"],
+        "road_blocked": data["road_blocked"],
 
-        # "people_at_risk": data["people_at_risk"],
+        "people_at_risk": data["people_at_risk"],
 
-        # "recommendation":
-        # data["rescue_recommendation"]
+        "recommendation": data["rescue_recommendation"],
 
-    "flood_detected":
-    data["flood_detected"],
+        "people_count": yolo["people_count"],
 
-    "severity":
-    data["severity"],
+        "vehicle_count": yolo["vehicle_count"],
 
-    "road_blocked":
-    data["road_blocked"],
+        "house_count": data["houses_damaged"]
 
-    "people_at_risk":
-    data["people_at_risk"],
+    }
 
-    "recommendation":
-    data["rescue_recommendation"]
-}
+
+# def analyze_scene(detections):
+
+#     people = 0
+#     vehicles = 0
+
+#     for d in detections:
+
+#         if d["class"] == "person":
+#             people += 1
+
+#         elif d["class"] in ["car", "truck", "bus"]:
+#             vehicles += 1
+
+#     return {
+
+#         "people": people,
+
+#         "vehicles": vehicles,
+
+#         "crowded": people > 20,
+
+#         "priority_score": people * 3 + vehicles
+
+#     }
+
+def analyze_latest_drone():
+
+    image = latest_drone()
+
+    if image is None:
+
+        return None
+
+    return analyze_ground_image(image)

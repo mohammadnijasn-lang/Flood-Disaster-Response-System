@@ -1,25 +1,174 @@
-import json
-
-FILE = "agents/citizens.json"
+from agents.database import get_connection
 
 
-def get_citizens():
+# =====================================
+# CREATE / UPDATE CITIZEN
+# =====================================
 
-    with open(FILE, "r") as f:
+def create_location(
 
-        return json.load(f)
+    name,
+    phone,
+    lat,
+    lon,
+    district
+
+):
+
+    conn = get_connection()
+
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute(
+
+        """
+
+        SELECT id
+
+        FROM citizens
+
+        WHERE phone=%s
+
+        """,
+
+        (phone,)
+
+    )
+
+    citizen = cursor.fetchone()
+
+    # -----------------------------
+    # Update Existing Citizen
+    # -----------------------------
+
+    if citizen:
+
+        cursor.execute(
+
+            """
+
+            UPDATE citizens
+
+            SET
+
+                name=%s,
+
+                latitude=%s,
+
+                longitude=%s,
+
+                district=%s,
+
+                status='SAFE'
+
+            WHERE phone=%s
+
+            """,
+
+            (
+
+                name,
+                lat,
+                lon,
+                district,
+                phone
+
+            )
+
+        )
+
+    # -----------------------------
+    # Insert New Citizen
+    # -----------------------------
+
+    else:
+
+        cursor.execute(
+
+            """
+
+            INSERT INTO citizens(
+
+                name,
+
+                phone,
+
+                district,
+
+                latitude,
+
+                longitude,
+
+                status
+
+            )
+
+            VALUES(
+
+                %s,
+
+                %s,
+
+                %s,
+
+                %s,
+
+                %s,
+
+                %s
+
+            )
+
+            """,
+
+            (
+
+                name,
+                phone,
+                district,
+                lat,
+                lon,
+                "SAFE"
+
+            )
+
+        )
+
+    conn.commit()
+
+    cursor.close()
+
+    conn.close()
 
 
-def get_citizens_by_district(district):
+# =====================================
+# GET ALL CITIZENS
+# =====================================
 
-    citizens = get_citizens()
+def get_all_citizens():
 
-    return [
+    conn = get_connection()
 
-        c
+    cursor = conn.cursor(dictionary=True)
 
-        for c in citizens
+    cursor.execute(
 
-        if c["district"].lower() == district.lower()
+        """
 
-    ]
+        SELECT *
+
+        FROM citizens
+
+        ORDER BY created_at DESC
+
+        """
+
+    )
+
+    citizens = cursor.fetchall()
+
+    cursor.close()
+
+    conn.close()
+
+    return citizens

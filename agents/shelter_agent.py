@@ -32,8 +32,6 @@ def find_nearest_shelter(
 
     shelter_types = [
 
-        "hospital",
-
         "community_centre",
 
         "school",

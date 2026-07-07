@@ -1,84 +1,33 @@
-# from langchain_google_genai import ChatGoogleGenerativeAI
+# import google.generativeai as genai
 # import os
 
-# os.environ["GOOGLE_API_KEY"] = ""
+# genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# llm = ChatGoogleGenerativeAI(
-#     model="gemini-2.0-flash"
-# )
+# model = genai.GenerativeModel("gemini-2.5-flash")
 
-# response = llm.invoke(
-#     "What is a flood?"
-# )
+# response = model.generate_content("Hello")
 
-# print(response.content)
+# print(response.text)
 
-# from langchain_ollama import ChatOllama
+# from dotenv import load_dotenv
+# import os
 
-# llm = ChatOllama(
-#     model="llama3"
-# )
+# load_dotenv()
 
-# response = llm.invoke(
-#     "Explain flood risk in one sentence"
-# )
+# print(os.getenv("GEMINI_API_KEY"))
 
-# print(response.content)
+from dotenv import load_dotenv
+import os
 
-# from crewai import Agent
-# from crewai import Task
-# from crewai import Crew
-# from crewai import LLM
+load_dotenv()
 
-# llm = LLM(
-#     model="ollama/llama3",
-#     base_url="http://localhost:11434"
-# )
+from crewai import LLM
 
-# agent = Agent(
-
-#     role="Flood Analyst",
-
-#     goal="Analyze flood risk",
-
-#     backstory="Flood expert",
-
-#     llm=llm
-# )
-
-# task = Task(
-
-#     description="""
-#     Hydro Coverage = 13.77%
-
-#     Flood Area = 4.26%
-
-#     Determine alert level.
-#     """,
-
-#     expected_output="""
-#     Alert level with explanation.
-#     """,
-
-#     agent=agent
-# )
-
-# crew = Crew(
-
-#     agents=[agent],
-
-#     tasks=[task]
-# )
-
-# result = crew.kickoff()
-
-# print(result)
-
-
-from llm import llm
-
-print(
-    llm.call(
-        "What is flood risk?"
-    )
+llm = LLM(
+    model="gemini/gemini-2.5-flash",
+    api_key=os.getenv("GEMINI_API_KEY")
 )
+
+response = llm.call("Say hello in one sentence.")
+
+print(response)

@@ -1,6 +1,5 @@
 from agents.weather_agent import get_weather_risk
-from agents.sentinel_agent import predict_location
-
+from agents.sentinel_fetch import predict_location
 
 def get_high_risk_districts():
 
@@ -23,7 +22,7 @@ def get_high_risk_districts():
 
     ]
 
-    risky = []
+    results = []
 
     for district in districts:
 
@@ -31,28 +30,38 @@ def get_high_risk_districts():
 
         rain = weather["rainfall_24h"]
 
-        # Skip low rainfall districts
-        if rain < 10:
-            continue
-
         try:
 
             flood = predict_location(district)
 
-            risky.append({
+            flood_area = flood["flood_area"]
 
-            "district":district,
+            # Start with the weather alert
+            alert = weather["alert"]
 
-            "rainfall":rain,
+            # Upgrade alert if flood prediction is severe
+            if flood_area >= 20:
 
-            "flood_area":flood["flood_area"],
+                alert = "🔴 RED"
 
-            "alert":weather["alert"]
+            elif flood_area >= 10:
 
-        })
+                alert = "🟠 ORANGE"
+
+            results.append({
+
+                "district": district,
+
+                "rainfall": rain,
+
+                "flood_area": flood_area,
+
+                "alert": alert
+
+            })
 
         except Exception as e:
 
             print(district, e)
 
-    return risky
+    return results

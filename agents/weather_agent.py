@@ -86,21 +86,21 @@ def get_weather_risk(district):
                 0
             )
 
-    if rainfall >= 15:
+    if rainfall <= 15.5:
 
-        alert = "🔴 RED"
+        alert = "🟢 GREEN"
 
-    elif rainfall >= 10:
-
-        alert = "🟠 ORANGE"
-
-    elif rainfall >= 5:
+    elif rainfall <= 64.4:
 
         alert = "🟡 YELLOW"
 
+    elif rainfall <= 204.4:
+
+        alert = "🟠 ORANGE"
+
     else:
 
-        alert = "🟢 GREEN"
+        alert = "🔴 RED"
 
     print("\n========== WEATHER REPORT ==========")
 
