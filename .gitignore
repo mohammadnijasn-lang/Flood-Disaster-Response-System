@@ -1,51 +1,14 @@
-# Python
 venv/
 __pycache__/
 *.pyc
-
-# Environment
 .env
-
-# Git
 .git/
-
-# Cache
 cache/
 agents/cache/
-
-# Uploads
 uploads/
-
-# Dataset
 mmflood/
-
-# Jupyter
 *.ipynb
-
-# Models
-*.pth
-*.pt
-
-# TIFF
-*.tif
-*.tiff
-
-# Images
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.webp
-
-# Maps
-*.html
-
-# Logs
 *.log
-
-# VS Code
 .vscode/
 .idea/
-
-# Docker
 mysql_data/
