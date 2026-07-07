@@ -1745,15 +1745,19 @@ def get_audit_logs():
     return logs
 
 if __name__ == "__main__":
+    import os
 
-    print("Starting Flask Server...")
+    print("=" * 60)
+    print("CUSTOM STARTUP")
+    print("DEBUG ENV:", os.getenv("FLASK_DEBUG"))
+    print("PORT:", os.getenv("PORT"))
+    print("=" * 60)
+
+    port = int(os.environ.get("PORT", 5000))
 
     app.run(
-
         host="0.0.0.0",
-
-        port=5000,
-
-        debug=True
-
+        port=port,
+        debug=False,
+        use_reloader=False
     )
