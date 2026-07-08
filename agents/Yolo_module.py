@@ -1,10 +1,32 @@
 from ultralytics import YOLO
 
-model = YOLO(
-    "yolov8n.pt"
-)
+# =====================
+# LAZY LOAD YOLO MODEL
+# =====================
+
+model = None
+
+
+def get_yolo():
+
+    global model
+
+    if model is None:
+
+        print("Loading YOLO Model...")
+
+        model = YOLO(
+            "yolov8n.pt"
+        )
+
+        print("YOLO Model Loaded")
+
+    return model
+
 
 def count_people(image_path):
+
+    model = get_yolo()
 
     results = model(
         image_path
@@ -30,9 +52,8 @@ def count_people(image_path):
 
     return {
 
-        "people_count":
-        people_count,
+        "people_count": people_count,
 
-        "vehicle_count":
-        vehicle_count
+        "vehicle_count": vehicle_count
+
     }

@@ -9,27 +9,41 @@ DEVICE = torch.device(
 )
 
 # =====================
-# LOAD MODEL
+# LAZY LOAD MODEL
 # =====================
 
-model = smp.UnetPlusPlus(
-    encoder_name="efficientnet-b3",
-    encoder_weights=None,
-    in_channels=4,
-    classes=1
-)
+model = None
 
-model.load_state_dict(
-    torch.load(
-        "best_model.pth",
-        map_location=DEVICE
-    )
-)
 
-model = model.to(DEVICE)
-model.eval()
+def get_model():
 
-print("Flood Model Loaded")
+    global model
+
+    if model is None:
+
+        print("Loading Flood Model...")
+
+        model = smp.UnetPlusPlus(
+            encoder_name="efficientnet-b3",
+            encoder_weights=None,
+            in_channels=4,
+            classes=1
+        )
+
+        model.load_state_dict(
+            torch.load(
+                "best_model.pth",
+                map_location=DEVICE
+            )
+        )
+
+        model = model.to(DEVICE)
+
+        model.eval()
+
+        print("Flood Model Loaded")
+
+    return model
 
 
 # =====================
@@ -179,6 +193,8 @@ def predict_flood(sentinel_file,dem_file,hydro_file):
     # -----------------
     # PREDICT
     # -----------------
+
+    model = get_model()
 
     with torch.no_grad():
 
